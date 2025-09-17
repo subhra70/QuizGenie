@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { loadData } from "../../store/examInfo";
+import { loadData } from "../../stores/examInfo"
 import Navbar from "../navbar/Navbar";
 
 function AutoGenCard() {
