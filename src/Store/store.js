@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import examInfoReducer from "./examInfo"
+import examInfoReducer from "./examInfo1"
 
 const store=configureStore({
     reducer:{

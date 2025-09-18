@@ -12,6 +12,7 @@ const initialState = {
     nat1: 0,
     nat2: 0,
     duration: 0,
+    year:0,
     desc: "",
   },
 };

@@ -10,28 +10,29 @@ import axios from "axios";
 function UserProfile() {
   const [profile, setProfile] = useState({
     img: "", // empty means no image
-    name: "",
-    gmail: "",
+    name: "N/A",
+    gmail: "N/A",
   });
+  const [isdisable,setIsdisable]=useState(true)
   const navigate=useNavigate()
 
  useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-      }
+      // if (!token) {
+      //   navigate("/");
+      // }
       try {
         const { exp } = jwtDecode(token);
         if (exp * 1000 < Date.now()) {
           await authService.logoutUser();
-          navigate("/");
         }
         const response=await axios.get(`${import.meta.env.VITE_API_URL}/user`,{
           headers:{
             Authorization:`Bearer ${token}`
           }
         })
+        setIsdisable(false)
         const user=response.data
         const status=response.status
         
@@ -41,7 +42,7 @@ function UserProfile() {
         }
         else if(status===401)
         {
-          navigate("unauthorized")
+          navigate("/unauthorized")
         }
       } catch (e) {
         console.log(e);
@@ -84,7 +85,7 @@ function UserProfile() {
             </div>
 
             {/* Sign Out */}
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow transition duration-300" onClick={handleSignout}>
+            <button className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow transition duration-300" onClick={handleSignout} disabled={isdisable}>
               <span>Sign Out</span>
               <GiExitDoor size={20} />
             </button>

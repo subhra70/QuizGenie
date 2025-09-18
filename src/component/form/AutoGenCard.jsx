@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { loadData } from "../../stores/examInfo"
+import { loadData } from "../../Store/examInfo1";
 import Navbar from "../navbar/Navbar";
 
 function AutoGenCard() {
@@ -19,6 +19,7 @@ function AutoGenCard() {
     msq2: questionData.msq2 || 0,
     nat1: questionData.nat1 || 0,
     nat2: questionData.nat2 || 0,
+    year: questionData.year || 0,
     duration: questionData.duration || 0,
     desc: questionData.desc || "",
   });
@@ -49,10 +50,13 @@ function AutoGenCard() {
       "nat1",
       "nat2",
       "duration",
+      "year",
     ];
     setData({
       ...data,
-      [name]: numericFields.includes(name) ? Number(value) : value,
+      [name]: numericFields.includes(name)
+        ? Number(value === "" ? 0 : value)
+        : value,
     });
   };
   const handleSubmit = async (e) => {
@@ -64,7 +68,7 @@ function AutoGenCard() {
 
   return (
     <div className="flex flex-col items-center px-4 py-8 mt-6 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-      <Navbar/>
+      <Navbar />
       {/* Heading */}
       <h1 className="text-3xl md:text-4xl text-blue-600 font-extrabold mb-6 tracking-wide">
         Generation Description
@@ -263,6 +267,23 @@ function AutoGenCard() {
             </div>
           </>
         )}
+        {/* Year */}
+        <div className="flex flex-col space-y-2">
+          <label
+            htmlFor="duration"
+            className="font-semibold bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
+          >
+            Year (Optional)
+          </label>
+          <input
+            type="number"
+            name="year"
+            placeholder="Mention year if you required year specific question"
+            value={data.year !== 0 ? data.year : ""}
+            onChange={handleInputChange}
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
+          />
+        </div>
 
         {/* Duration */}
         <div className="flex flex-col space-y-2">
