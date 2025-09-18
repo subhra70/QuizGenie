@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadData } from "../../Store/examInfo";
+import { loadData } from "../../Store/examInfo1";
 import { useNavigate } from "react-router";
 import Navbar from "../navbar/Navbar";
 
