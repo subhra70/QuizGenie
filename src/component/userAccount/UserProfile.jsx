@@ -17,39 +17,48 @@ function UserProfile() {
   const navigate=useNavigate()
 
  useEffect(() => {
-    const init = async () => {
-      const token = localStorage.getItem("token");
-      // if (!token) {
-      //   navigate("/");
-      // }
-      try {
-        const { exp } = jwtDecode(token);
-        if (exp * 1000 < Date.now()) {
-          await authService.logoutUser();
-        }
-        const response=await axios.get(`${import.meta.env.VITE_API_URL}/user`,{
-          headers:{
-            Authorization:`Bearer ${token}`
-          }
-        })
-        setIsdisable(false)
-        const user=response.data
-        const status=response.status
-        
-        if(status===200)
-        {
-          setProfile({...profile,img:user.picture,name:user.name,gmail:user.email})
-        }
-        else if(status===401)
-        {
-          navigate("/unauthorized")
-        }
-      } catch (e) {
-        console.log(e);
+  const init = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp || exp * 1000 < Date.now()) {
+        // Token expired
+        authService.logout();
+        navigate("/");
+        return;
       }
-    };
-    init();
-  }, [navigate]);
+
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        const user = response.data;
+        setProfile({
+          img: user.picture,
+          name: user.name,
+          gmail: user.email,
+        });
+        setIsdisable(false);
+      } else {
+        navigate("/unauthorized");
+      }
+    } catch (e) {
+      console.log(e);
+      authService.logout();
+      navigate("/");
+    }
+  };
+
+  init();
+}, [navigate]);
+
   const handleSignout=async()=>{
     authService.logout()
     navigate("/")

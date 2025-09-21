@@ -22,6 +22,10 @@ import History from "./component/history/History.jsx";
 import UserProfile from "./component/userAccount/UserProfile.jsx";
 import Remaining from "./component/Remaining.jsx";
 import Unauthorized401 from "./component/Unauthorized401.jsx";
+import Success from "./component/Success.jsx";
+import ExamSuccess from "./component/examForm/ExamSuccess.jsx";
+import TestForm from "./component/examForm/TestForm.jsx";
+import PreseTestForm from "./component/examForm/PreTestForm.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +41,10 @@ const router = createBrowserRouter(
       <Route path="userProfile" element={<UserProfile/>}/>
       <Route path="remaining" element={<Remaining/>}/>
       <Route path="unauthorized" element={<Unauthorized401/>}/>
+      <Route path="success" element={<Success/>}/>
+      <Route path="xmsuccess" element={<ExamSuccess/>}/>
+      <Route path="test" element={<TestForm/>}/>
+      <Route path="pretest" element={<PreseTestForm/>}/>
       <Route path="*" element={<Err404/>}/>
     </Route>
   )

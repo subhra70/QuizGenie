@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { loadData } from "../../Store/examInfo1";
+import { loadData, setTotalQuestions } from "../../Store/examInfo1";
 import Navbar from "../navbar/Navbar";
 
 function AutoGenCard() {
@@ -9,9 +9,9 @@ function AutoGenCard() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [negAllow, setNegAllow] = useState("yes");
   const questionData = useSelector((state) => state.examinationInfo.xminfo);
+  const [total,setTotal]=useState(0)
   const [data, setData] = useState({
     format: questionData.format || "",
-    qno: questionData.totalQuestion || 0,
     neg: questionData.negativeMark || true,
     mcq1: questionData.mcq1 || 0,
     mcq2: questionData.mcq2 || 0,
@@ -19,9 +19,8 @@ function AutoGenCard() {
     msq2: questionData.msq2 || 0,
     nat1: questionData.nat1 || 0,
     nat2: questionData.nat2 || 0,
-    year: questionData.year || 0,
     duration: questionData.duration || 0,
-    desc: questionData.desc || "",
+    description: questionData.description || "",
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,7 +41,6 @@ function AutoGenCard() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const numericFields = [
-      "qno",
       "mcq1",
       "mcq2",
       "msq1",
@@ -50,12 +48,11 @@ function AutoGenCard() {
       "nat1",
       "nat2",
       "duration",
-      "year",
     ];
     setData({
       ...data,
       [name]: numericFields.includes(name)
-        ? Number(value === "" ? 0 : value)
+        ? parseInt(value || 0)
         : value,
     });
   };
@@ -63,6 +60,7 @@ function AutoGenCard() {
     e.preventDefault();
     setIsSubmit(true);
     dispatch(loadData(data));
+    dispatch(setTotalQuestions(total))
     navigate("/confirmPost");
   };
 
@@ -104,10 +102,32 @@ function AutoGenCard() {
             </option>
             <option value="GATE">GATE</option>
             <option value="NIMCET">NIMCET</option>
+            <option value="CUET(UG)">CUET(UG)</option>
             <option value="CUET(PG)">CUET(PG)</option>
+            <option value="JECA">JECA</option>
             <option value="Other">Other</option>
           </select>
         </div>
+        {!showDetail && (
+          <div className="flex flex-col space-y-2">
+            <label
+              htmlFor="desc"
+              className="font-semibold bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 text-lg"
+            >
+              Specify Details
+            </label>
+            <textarea
+              name="description"
+              id="description"
+              required
+              value={data.desc}
+              onChange={handleInputChange}
+              rows="4"
+              placeholder="Language(if any),Subject(Mathematics,Physics,Computer Science etc) ,Syllabus and Question pattern with marks distribution (copy from official website and paste here)"
+              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
+            ></textarea>
+          </div>
+        )}
 
         {/* Number of Questions & Negative Marking */}
         {showDetail && (
@@ -123,8 +143,8 @@ function AutoGenCard() {
                 type="number"
                 name="qno"
                 placeholder="Enter number"
-                value={data.qno}
-                onChange={handleInputChange}
+                value={total}
+                onChange={(e)=>setTotal(e.target.value)}
                 className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
                 required
               />
@@ -267,23 +287,6 @@ function AutoGenCard() {
             </div>
           </>
         )}
-        {/* Year */}
-        <div className="flex flex-col space-y-2">
-          <label
-            htmlFor="duration"
-            className="font-semibold bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
-          >
-            Year (Optional)
-          </label>
-          <input
-            type="number"
-            name="year"
-            placeholder="Mention year if you required year specific question"
-            value={data.year !== 0 ? data.year : ""}
-            onChange={handleInputChange}
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
-          />
-        </div>
 
         {/* Duration */}
         <div className="flex flex-col space-y-2">
@@ -312,8 +315,8 @@ function AutoGenCard() {
               Examination Description
             </label>
             <textarea
-              name="desc"
-              id="desc"
+              name="description"
+              id="description"
               value={data.desc}
               onChange={handleInputChange}
               rows="4"

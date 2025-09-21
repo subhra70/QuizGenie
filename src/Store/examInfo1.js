@@ -4,6 +4,7 @@ const initialState = {
   xminfo: {
     format: "",
     totalQuestion: 0,
+    fullMarks:0,
     negativeMark: true,
     mcq1: 0,
     mcq2: 0,
@@ -12,8 +13,7 @@ const initialState = {
     nat1: 0,
     nat2: 0,
     duration: 0,
-    year:0,
-    desc: "",
+    description: "",
   },
 };
 
@@ -23,8 +23,7 @@ const examInfoSlice = createSlice({
   reducers: {
     loadData: (state, action) => {
       state.xminfo.format = action.payload.format;
-      state.xminfo.desc = action.payload.desc;
-      state.xminfo.totalQuestion = action.payload.qno;
+      state.xminfo.description = action.payload.description;
       state.xminfo.mcq1 = action.payload.mcq1;
       state.xminfo.mcq2 = action.payload.mcq2;
       state.xminfo.msq1 = action.payload.msq1;
@@ -34,7 +33,16 @@ const examInfoSlice = createSlice({
       state.xminfo.duration = action.payload.duration;
       state.xminfo.negativeMark = action.payload.neg;
     },
+    setDescription:(state,action)=>{
+      state.xminfo.description=action.payload;
+    },
+    setTotalQuestions:(state,action)=>{
+      state.xminfo.totalQuestion=action.payload;
+    },
+    setFullMarks:(state,action)=>{
+      state.xminfo.fullMarks=action.payload;
+    }
   },
 });
-export const { loadData } = examInfoSlice.actions;
+export const { loadData, setDescription,setTotalQuestions,setFullMarks } = examInfoSlice.actions;
 export default examInfoSlice.reducer
