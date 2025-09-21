@@ -208,7 +208,7 @@ function PostSelectionCard() {
                       d="M4 12a8 8 0 018-8v8H4z"
                     ></path>
                   </svg>
-                  Loading...
+                  Generating...
                 </span>
               ) : (
                 "✅ Submit"
