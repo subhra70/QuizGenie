@@ -51,10 +51,10 @@ function PostSelectionCard() {
       dispatch(setFullMarks(300))
       setNegMark1(-1);
     } else if (xmInfo.format === "JECA") {
-      setTotalQuestion(7);
-      setFullMark(9);
-      dispatch(setTotalQuestions(7))
-      dispatch(setFullMarks(9))
+      setTotalQuestion(100);
+      setFullMark(120);
+      dispatch(setTotalQuestions(100))
+      dispatch(setFullMarks(120))
       setNegMark1(0.25)
     } else {
       setFullMark(totalMark);
