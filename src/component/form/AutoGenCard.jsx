@@ -87,7 +87,7 @@ function AutoGenCard() {
   };
 
   return (
-    <div className="flex flex-col items-center px-4 py-8 mt-6 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="flex flex-col items-center px-4 py-12 mt-6 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
       <Navbar />
       {/* Heading */}
       <h1 className="text-3xl md:text-4xl text-blue-600 font-extrabold mb-6 tracking-wide">

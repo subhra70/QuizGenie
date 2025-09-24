@@ -1,7 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../navbar/Navbar";
+import authService from "../../authentication/auth";
+import { jwtDecode } from "jwt-decode";
 
 function Home() {
+  useEffect(() => {
+  const init = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp || exp * 1000 < Date.now()) {
+        // Token expired
+        authService.logout();
+        return
+      }
+    } catch (e) {
+      console.log(e);
+      authService.logout();
+    }
+  };
+
+  init();
+}, []);
   return (
     <div className="w-full relative md:mt-12 md:pt-16 md:grid md:grid-cols-12 md:gap-6">
       

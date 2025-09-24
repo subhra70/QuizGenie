@@ -42,7 +42,6 @@ function History() {
           }
         );
         if (response.status === 200) {
-          console.log("Response: ", response.data);
           dispatch(loadData(response.data));
           setIsLoading(false);
         }

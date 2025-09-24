@@ -125,7 +125,7 @@ function ManualCreateQuiz() {
   }
 
   return (
-    <div className="p-4 mt-5 md:p-8">
+    <div className="p-2 mt-5 md:p-8">
       <Navbar />
 
       {/* Progress Info */}
@@ -179,7 +179,7 @@ function ManualCreateQuiz() {
       </div>
 
       {/* Form Section */}
-      <div className="w-full mt-12 rounded-xl shadow-lg py-6 px-4 md:px-8 bg-gray-100 dark:bg-gray-900 max-w-3xl mx-auto">
+      <div className="w-full mt-6 mb-8 rounded-xl shadow-lg py-6 pb-8 px-4 md:px-8 md:mt-12 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 max-w-3xl mx-auto">
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           {/* Question */}
           <div>
@@ -201,7 +201,8 @@ function ManualCreateQuiz() {
                 };
                 setQuestions(newQ);
               }}
-              className="w-full border rounded-lg px-4 py-2 mt-2"
+              className="w-full border rounded-lg px-3 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
               required
             />
           </div>
@@ -226,7 +227,8 @@ function ManualCreateQuiz() {
                         newQ[currentIndex] = qCopy;
                         setQuestions(newQ);
                       }}
-                      className="flex-1 border rounded-lg px-3 py-2"
+                      className="w-full border rounded-lg px-3 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                       required
                     />
                   </div>
@@ -250,7 +252,8 @@ function ManualCreateQuiz() {
                 };
                 setQuestions(newQ);
               }}
-              className="w-full border rounded-lg px-4 py-2 mt-2"
+              className="w-full border rounded-lg px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-green-500
+                         bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
               required
             />
           </div>
@@ -261,7 +264,7 @@ function ManualCreateQuiz() {
               <button
                 type="button"
                 onClick={handlePrevious}
-                className="w-1/6 bg-yellow-500 text-white py-3 rounded-lg"
+                className="w-1/3 md:w-1/6 bg-yellow-500 text-white py-3 rounded-lg"
               >
                 Previous
               </button>
@@ -270,14 +273,14 @@ function ManualCreateQuiz() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="w-1/6 bg-blue-600 text-white py-3 rounded-lg"
+                className="w-1/3 md:w-1/6 bg-blue-600 text-white py-3 rounded-lg"
               >
                 Next
               </button>
             ) : (
               <button
                 type="submit"
-                className="w-1/6 bg-green-600 text-white py-3 rounded-lg"
+                className="w-1/3 md:w-1/6 bg-green-600 text-white py-3 rounded-lg"
               >
                 Submit
               </button>
