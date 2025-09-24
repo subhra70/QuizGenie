@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { loadData, setTotalQuestions } from "../../Store/examInfo1";
 import Navbar from "../navbar/Navbar";
+import authService from "../../authentication/auth";
+import { jwtDecode } from "jwt-decode";
 
 function AutoGenCard() {
   const [showDetail, setShowDetail] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [negAllow, setNegAllow] = useState("yes");
   const questionData = useSelector((state) => state.examinationInfo.xminfo);
-  const [total,setTotal]=useState(0)
+  const [total, setTotal] = useState(0);
   const [data, setData] = useState({
     format: questionData.format || "",
     neg: questionData.negativeMark || true,
@@ -24,10 +26,30 @@ function AutoGenCard() {
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp || exp * 1000 < Date.now()) {
+        authService.logout();
+        navigate("/");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      authService.logout();
+      navigate("/");
+    }
+  }, [navigate]);
   const handleSelection = (e) => {
     const data = e.target.value;
     if (data === "Other") {
       setShowDetail(true);
+      setData({ ...data, format: data });
     } else {
       setShowDetail(false);
     }
@@ -51,16 +73,16 @@ function AutoGenCard() {
     ];
     setData({
       ...data,
-      [name]: numericFields.includes(name)
-        ? parseInt(value || 0)
-        : value,
+      [name]: numericFields.includes(name) ? parseInt(value || 0) : value,
     });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmit(true);
     dispatch(loadData(data));
-    dispatch(setTotalQuestions(total))
+    if (data.format === "Other") {
+      dispatch(setTotalQuestions(total));
+    }
     navigate("/confirmPost");
   };
 
@@ -123,7 +145,7 @@ function AutoGenCard() {
               value={data.desc}
               onChange={handleInputChange}
               rows="4"
-              placeholder="Language(if any),Subject(Mathematics,Physics,Computer Science etc) ,Syllabus and Question pattern with marks distribution (copy from official website and paste here)"
+              placeholder="Specify a concise description about the exam (Language of question,Subject and Syllabus(topics only not details). Don't use not more than 70 words."
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
             ></textarea>
           </div>
@@ -144,7 +166,7 @@ function AutoGenCard() {
                 name="qno"
                 placeholder="Enter number"
                 value={total}
-                onChange={(e)=>setTotal(e.target.value)}
+                onChange={(e) => setTotal(e.target.value)}
                 className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
                 required
               />

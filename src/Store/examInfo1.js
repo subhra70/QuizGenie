@@ -31,7 +31,7 @@ const examInfoSlice = createSlice({
       state.xminfo.nat1 = action.payload.nat1;
       state.xminfo.nat2 = action.payload.nat2;
       state.xminfo.duration = action.payload.duration;
-      state.xminfo.negativeMark = action.payload.neg;
+      state.xminfo.negativeMark = action.payload.negativeMark;
     },
     setDescription:(state,action)=>{
       state.xminfo.description=action.payload;

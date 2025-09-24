@@ -21,27 +21,26 @@ function Header() {
       localStorage.setItem("theme", "light");
       document.documentElement.classList.remove("dark");
     }
-    
   }, [theme]);
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  try {
-    const { exp } = jwtDecode(token);
-    if (exp * 1000 < Date.now()) {
-      authService.logoutUser();
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp || exp * 1000 < Date.now()) {
+        authService.logout();
+        navigate("/");
+        return;
+      }
+    } catch (e) {
+      // Invalid token
+      localStorage.removeItem("token");
+      localStorage.removeItem("image");
+      console.log("Invalid token", e);
       navigate("/");
     }
-  } catch (e) {
-    // Invalid token
-    localStorage.removeItem("token");
-    localStorage.removeItem("image");
-    console.log("Invalid token", e);
-    navigate("/");
-  }
-}, [navigate]);
-
+  }, [navigate, image]);
 
   // Capture token, name, image from URL params once
   useEffect(() => {

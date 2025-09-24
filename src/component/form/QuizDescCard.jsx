@@ -1,25 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadData } from "../../Store/examInfo1";
+import { loadData, setTotalQuestions} from "../../Store/examInfo1";
 import { useNavigate } from "react-router";
 import Navbar from "../navbar/Navbar";
+import authService from "../../authentication/auth";
+import { jwtDecode } from "jwt-decode";
 
 function QuizDescCard() {
   const [negvalue, setNegvalue] = useState("yes");
   const [isSubmit, setIsSubmit] = useState(false);
-  const [isError, setIsError] = useState(false);
+   const [totalQuestion,setTotalQuestion]=useState(0)
   const xmInfo = useSelector((state) => state.examinationInfo.xminfo);
 
   const [data, setData] = useState({
     format: "Manual",
-    qno: xmInfo.totalQuestion !== 0 ? xmInfo.totalQuestion : 0,
-    neg: xmInfo.negativeMark || true,
-    mcq1: xmInfo.totalQuestion !== 0 ? xmInfo.mcq1 : 0,
-    mcq2: xmInfo.totalQuestion !== 0 ? xmInfo.mcq2 : 0,
-    msq1: xmInfo.totalQuestion !== 0 ? xmInfo.msq1 : 0,
-    msq2: xmInfo.totalQuestion !== 0 ? xmInfo.msq2 : 0,
-    nat1: xmInfo.totalQuestion !== 0 ? xmInfo.nat1 : 0,
-    nat2: xmInfo.totalQuestion !== 0 ? xmInfo.nat2 : 0,
+    mcq1:0,
+    mcq2:0,
+    msq1:0,
+    msq2:0,
+    nat1:0,
+    nat2:0,
+    negativeMark: xmInfo.negativeMark || true,
     duration: xmInfo.totalQuestion !== 0 ? xmInfo.duration : 0,
     desc: "",
   });
@@ -27,16 +28,29 @@ function QuizDescCard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    try {
+      const { exp } = jwtDecode(token);
+      if (!exp || exp * 1000 < Date.now()) {
+        authService.logout();
+        navigate("/");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      authService.logout();
+      navigate("/");
+    }
+  }, [navigate]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const intVal = [
-      "qno",
-      "mcq1",
-      "mcq2",
-      "msq1",
-      "msq2",
-      "nat1",
-      "nat2",
       "duration",
     ];
     setData({
@@ -61,18 +75,10 @@ function QuizDescCard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const total = Number(
-      data.mcq1 + data.mcq2 + data.msq1 + data.msq2 + data.nat1 + data.nat2
-    );
-    if (total !== data.qno) {
-      setIsSubmit(false);
-      setIsError(true);
-    } else {
-      setIsError(false);
       setIsSubmit(true);
       dispatch(loadData(data));
-      navigate("/confirmPost");
-    }
+      dispatch(setTotalQuestions(totalQuestion))
+      navigate("/createQuiz");
   };
 
   return (
@@ -97,11 +103,11 @@ function QuizDescCard() {
             </label>
             <input
               type="number"
-              name="qno"
+              name="totalQuestion"
               required
-              value={data.qno !== 0 ? data.qno : ""}
+              value={data.totalQuestion !== 0 ? data.totalQuestion : ""}
               placeholder="Enter number"
-              onChange={handleInputChange}
+              onChange={(e)=>setTotalQuestion(Number(e.target.value))}
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500
                          bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
             />
@@ -136,7 +142,7 @@ function QuizDescCard() {
           </div>
         </div>
 
-        {/* Question Details */}
+        {/* Question Details
         <h2 className="text-2xl font-bold border-b pb-2">Question Details</h2>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -167,7 +173,7 @@ function QuizDescCard() {
               )}
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Duration */}
         <div className="flex flex-col space-y-2">

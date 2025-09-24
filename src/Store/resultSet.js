@@ -10,11 +10,12 @@ const resultSlice = createSlice({
       return action.payload.map((item) => ({
         resId: item.id,
         quizId: item.quizClass.id,
+        role:item.role,
         obtainedMarks: item.obtainedMark,
         fullMarks: item.quizClass.fullMarks,
         date: item.date,
         locked: item.quizClass.isLocked,
-        performed: item.quizClass.isPerformed,
+        isPerformed: item.performed,
       }));
     },
     handleLock: (state, action) => {

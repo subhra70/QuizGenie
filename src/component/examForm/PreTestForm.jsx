@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import authService from "../../authentication/auth";
 import { loadData } from "../../Store/questionFormat";
+import Navbar from "../navbar/Navbar";
 
 function PreseTestForm() {
-  const [userId,setUserId]=useState(-1)
-  const [duration,setDuration]=useState(0)
+  const [userId, setUserId] = useState(-1);
+  const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [fullMarks, setFullMarks] = useState(0);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location=useLocation()
-  const quizId=location.state?.qid;
+  const quizDetails = useSelector((state) => state.examinationInfo.xminfo);
+  const location = useLocation();
+  const quizId = location.state?.qid;
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -28,7 +31,7 @@ function PreseTestForm() {
 
       try {
         const { exp } = jwtDecode(token);
-        if (exp * 1000 < Date.now()) {
+        if (!exp || exp * 1000 < Date.now()) {
           authService.logout();
           navigate("/");
           return;
@@ -41,8 +44,9 @@ function PreseTestForm() {
 
         if (response.status === 200) {
           dispatch(loadData(response.data));
-          setUserId(response.data.id)
-          setDuration(response.data.duration)
+          setUserId(response.data.id);
+          setDuration(response.data.duration);
+          setFullMarks(response.data.fullMarks);
         }
       } catch (err) {
         console.error(err);
@@ -54,10 +58,21 @@ function PreseTestForm() {
 
     fetchQuestions();
   }, [dispatch, navigate, quizId]);
+  useEffect(() => {
+    const fm =
+      quizDetails.mcq1 +
+      quizDetails.mcq2 * 2 +
+      quizDetails.msq1 +
+      quizDetails.msq2 * 2 +
+      quizDetails.nat1 +
+      quizDetails.nat2 * 2;
+    setFullMarks(fm);
+    setDuration(quizDetails.duration);
+  }, [quizDetails]);
 
   const handleStartTest = () => {
-    navigate("/remaining")
-    // navigate("/test", { state: { userId: userId,duration:duration} });
+    // navigate("/remaining")
+    navigate("/test", { state: { userId: userId, duration: duration } });
   };
 
   if (isLoading) {
@@ -83,34 +98,43 @@ function PreseTestForm() {
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300 space-y-6">
+      <Navbar />
       {/* Exam Details */}
       <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-bold text-center">📋 Exam Details</h1>
         <div className="flex justify-between text-gray-700 dark:text-gray-300 font-medium">
           <span>
-            Full Marks: <b>100</b>
+            Full Marks: <b>{fullMarks}</b>
           </span>
           <span>
-            Duration: <b>120 Minutes</b>
+            Duration: <b>{duration}</b>
           </span>
         </div>
       </div>
 
       {/* Notes */}
       <div className="flex flex-col space-y-2">
-        <h2 className="text-xl font-semibold text-center">📝 Important Notes</h2>
+        <h2 className="text-xl font-semibold text-center">
+          📝 Important Notes
+        </h2>
         <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
           <li>During test, you can only use the buttons on the screen.</li>
           <li>You can leave the quiz only after submitting.</li>
           <li>Your answers will be saved automatically.</li>
-          <li>Use Desktop / Laptop for better experience. It will enhance your speed.</li>
+          <li>
+            Use Desktop / Laptop for better experience. It will enhance your
+            speed.
+          </li>
         </ul>
       </div>
 
       {/* Message */}
       <p className="text-center text-gray-700 dark:text-gray-300 font-medium">
-        Be honest in this test. Your discipline and honesty are pre-steps toward your success.{" "}
-        <span className="font-bold text-pink-600 dark:text-pink-400">Best Of Luck!</span>
+        Be honest in this test. Your discipline and honesty are pre-steps toward
+        your success.{" "}
+        <span className="font-bold text-pink-600 dark:text-pink-400">
+          Best Of Luck!
+        </span>
       </p>
 
       {/* Start Test Button */}

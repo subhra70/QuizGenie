@@ -1,79 +1,123 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import Navbar from "../navbar/Navbar";
 import authService from "../../authentication/auth";
 import { jwtDecode } from "jwt-decode";
-import { setFullMarks,setTotalQuestions} from "../../Store/examInfo1";
+import { setFullMarks, setTotalQuestions } from "../../Store/examInfo1";
 import axios from "axios";
 
 function PostSelectionCard() {
   const xmInfo = useSelector((state) => state.examinationInfo.xminfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [totalQuestion, setTotalQuestion] = useState(xmInfo.totalQuestion);
+  const location = useLocation();
+  const [totalQuestion, setTotalQuestion] = useState(0);
   const [fullMark, setFullMark] = useState(0);
   const [negMark1, setNegMark1] = useState();
   const [negMark2, setNegMark2] = useState();
   const [loading, setLoading] = useState(false);
+  const questionsSet = location.state?.questionSet;
 
-  const totalMark =
-    Number(xmInfo.mcq1) * 1 +
-    Number(xmInfo.mcq2) * 2 +
-    Number(xmInfo.msq1) * 1 +
-    Number(xmInfo.msq2) * 2 +
-    Number(xmInfo.nat1) * 1 +
-    Number(xmInfo.nat2) * 2;
+  useEffect(() => {
+    console.log(xmInfo);
+    setFullMark(xmInfo.fullMarks);
+    setTotalQuestion(xmInfo.totalQuestion);
+  }, [xmInfo, fullMark, totalQuestion]);
 
   useEffect(() => {
     if (xmInfo.format === "GATE") {
       setTotalQuestion(65);
-      dispatch(setTotalQuestions(65))
-      dispatch(setFullMarks(100))
+      dispatch(setTotalQuestions(65));
+      dispatch(setFullMarks(100));
       setFullMark(100);
       setNegMark1(0.33);
       setNegMark2(0.66);
     } else if (xmInfo.format === "NIMCET") {
       setTotalQuestion(120);
       setFullMark(1000);
-      dispatch(setTotalQuestions(120))
-      dispatch(setFullMarks(1000))
+      dispatch(setTotalQuestions(120));
+      dispatch(setFullMarks(1000));
     } else if (xmInfo.format === "CUET(UG)") {
       setTotalQuestion(150);
       setFullMark(750);
-      dispatch(setTotalQuestions(120))
-      dispatch(setFullMarks(750))
+      dispatch(setTotalQuestions(120));
+      dispatch(setFullMarks(750));
       setNegMark1(-1);
     } else if (xmInfo.format === "CUET(PG)") {
       setTotalQuestion(75);
       setFullMark(300);
-      dispatch(setTotalQuestions(75))
-      dispatch(setFullMarks(300))
+      dispatch(setTotalQuestions(75));
+      dispatch(setFullMarks(300));
       setNegMark1(-1);
     } else if (xmInfo.format === "JECA") {
       setTotalQuestion(100);
       setFullMark(120);
-      dispatch(setTotalQuestions(100))
-      dispatch(setFullMarks(120))
-      setNegMark1(0.25)
+      dispatch(setTotalQuestions(100));
+      dispatch(setFullMarks(120));
+      setNegMark1(0.25);
+    } else if (xmInfo.format === "Manual") {
+      if (Array.isArray(questionsSet)) {
+        const fm = questionsSet.reduce(
+          (sum, item) => sum + (item.mark || 0),
+          0
+        );
+        setFullMark(fm);
+        dispatch(setFullMarks(fm));
+      }
     } else {
-      setFullMark(totalMark);
       if (xmInfo.negativeMark) {
         setNegMark1(0.25);
         setNegMark2(0.5);
       }
-      const total=xmInfo.mcq1+xmInfo.mcq2+xmInfo.msq1+xmInfo.msq2+xmInfo.nat1+xmInfo.nat2
-      setFullMark(total)
-      dispatch(setTotalQuestions(total))
-      dispatch(setFullMarks(totalMark))
+      const total =
+        xmInfo.mcq1 +
+        xmInfo.mcq2 * 2 +
+        xmInfo.msq1 +
+        xmInfo.msq2 * 2 +
+        xmInfo.nat1 +
+        xmInfo.nat2 * 2;
+      setFullMark(total);
+      dispatch(setFullMarks(total));
     }
-  }, [xmInfo.format, totalMark]);
+  }, [xmInfo.format, questionsSet]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     if (xmInfo.format === "Manual") {
-      navigate("/createQuiz");
+      console.log(xmInfo);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/");
+      }
+      try {
+        const { exp } = jwtDecode(token);
+        if (!exp || exp * 1000 < Date.now()) {
+          authService.logout();
+          navigate("/");
+          return;
+        }
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/manualCreation`,
+          {
+            quizDetails: xmInfo,
+            questionDetails: questionsSet,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          console.log("OK");
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
     } else {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -95,16 +139,17 @@ function PostSelectionCard() {
           }
         );
         if (response.status === 200) {
-          navigate("/success")
+          navigate("/success");
         } else if (response.status === 401) {
           navigate("/unauthorized");
-        }
-        else{
-          navigate("/autoGen")
+        } else if (response.status === 500) {
+          navigate("/netErr");
+        } else {
+          navigate("/autoGen");
         }
       } catch (error) {
         console.log(error);
-        setLoading(false)
+        setLoading(false);
       }
     }
   };
@@ -121,6 +166,10 @@ function PostSelectionCard() {
         <h1 className="text-2xl sm:text-3xl font-bold text-center text-indigo-600">
           📘 Question Pattern
         </h1>
+        <div className="W-full bg-red-300 p-2 rounded-md">
+          <b>Note:</b> In case of auto generation, AI may not generate exact no
+          of question that you have specified. Sorry for this.
+        </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           {/* Format */}

@@ -25,7 +25,7 @@ const questionSlice = createSlice({
           type: marks.type || "null",
           marks: marks.mark,
           negMark: marks.negMark,
-          answer: "",
+          answer: [],
         };
       });
     },

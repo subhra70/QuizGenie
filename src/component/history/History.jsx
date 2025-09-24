@@ -8,10 +8,12 @@ import { jwtDecode } from "jwt-decode";
 import authService from "../../authentication/auth";
 import axios from "axios";
 import { loadData } from "../../Store/resultSet";
+import { FaRegEdit } from "react-icons/fa";
+import { CiNoWaitingSign } from "react-icons/ci";
 
 function History() {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadMsg,setLoadMsg]=useState("Loading Data Please Wait...")
+  const [loadMsg, setLoadMsg] = useState("Loading Data Please Wait...");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const resultSet = useSelector((state) => state.resultInfo);
@@ -26,30 +28,35 @@ function History() {
       }
       try {
         const { exp } = jwtDecode(token);
-        if (exp * 1000 < Date.now()) {
+        if (!exp || exp * 1000 < Date.now()) {
           authService.logout();
+          navigate("/");
+          return;
         }
-        const response=await axios.get(`${import.meta.env.VITE_API_URL}/history`,{
-          headers:{
-            Authorization:`Bearer ${token}`
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/history`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        })
-        if(response.status===200)
-        {
-          dispatch(loadData(response.data))
-          setIsLoading(false)
+        );
+        if (response.status === 200) {
+          console.log("Response: ", response.data);
+          dispatch(loadData(response.data));
+          setIsLoading(false);
         }
       } catch (error) {
         console.log(error);
-        setIsLoading(false)
-        setLoadMsg("No History Found")
+        setIsLoading(false);
+        setLoadMsg("No History Found");
       }
     };
     fetchResultHistory();
   }, []);
   useEffect(() => {
     setIsLoading(resultSet.length === 0);
-    console.log(resultSet)
+    console.log(resultSet);
   }, [resultSet]);
 
   return (
@@ -67,9 +74,10 @@ function History() {
               <th className="px-4 py-2 font-semibold">#</th>
               <th className="px-4 py-2 font-semibold">Obtained Marks</th>
               <th className="px-4 py-2 font-semibold">Full Marks</th>
-              <th className="px-4 py-2 font-semibold">Date</th>
+              <th className="px-4 py-2 font-semibold">Creation Date</th>
               <th className="px-4 py-2 font-semibold">Percentage</th>
               <th className="px-4 py-2 font-semibold">Test</th>
+              <th className="px-4 py-2 font-semibold">Edit</th>
               <th className="px-2 py-2 font-semibold">Protect</th>
               <th className="px-2 py-2 font-semibold">Delete</th>
             </tr>
@@ -91,18 +99,62 @@ function History() {
                 >
                   <td className="px-4 py-2 text-center">{index + 1}</td>
                   <td className="px-4 py-2 text-center">
-                    {item.obtainedMarks===0?"Not Performed":item.obtainedMarks}
+                    {!item.isPerformed ? "Not Performed" : item.obtainedMarks}
                   </td>
                   <td className="px-4 py-2 text-center">{item.fullMarks}</td>
                   <td className="px-4 py-2 text-center">{item.date}</td>
                   <td className="px-4 py-2 text-center font-medium">
-                    {item.obtainedMarks!==0&&((item.obtainedMarks / item.fullMarks) * 100).toFixed(2)}%
+                    {!item.isPerformed
+                      ? `${(
+                          (Number(item.obtainedMarks) /
+                            Number(item.fullMarks)) *
+                          100
+                        ).toFixed(2)}%`
+                      : "N/A"}
                   </td>
+
                   <td className="px-4 py-2">
                     <div className="flex justify-center">
-                      <button className="bg-pink-500 text-white px-3 py-1 rounded-md" onClick={()=>(navigate("/pretest",{state:{qid:item.quizId}}))}>
-                        Give Test
-                      </button>
+                      {!item.isPerformed && item.role === "User" ? (
+                        <button
+                          className="bg-pink-500 text-white px-3 py-1 rounded-md"
+                          onClick={() =>
+                            navigate("/pretest", {
+                              state: { qid: item.quizId },
+                            })
+                          }
+                        >
+                          Give Test
+                        </button>
+                      ) : (
+                        <button
+                          className="bg-pink-500 text-white px-3 py-1 rounded-md"
+                          onClick={() =>
+                            navigate("/answer", {
+                              state: { qid: item.quizId },
+                            })
+                          }
+                        >
+                          Show Answer
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-2">
+                    <div className="flex justify-center items-center">
+                      {item.role === "Admin" ? (
+                        <FaRegEdit
+                          size={20}
+                          color="yellow"
+                          onClick={() => navigate("/remaining")}
+                        />
+                      ) : (
+                        <CiNoWaitingSign
+                          size={20}
+                          color="yellow"
+                          onClick={() => navigate("/remaining")}
+                        />
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-2">

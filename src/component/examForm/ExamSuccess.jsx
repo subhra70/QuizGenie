@@ -1,7 +1,9 @@
 import React from 'react'
 import successImg from "../../assets/successImg.png"
+import { useNavigate } from 'react-router';
 
 function ExamSuccess() {
+  const navigate=useNavigate()
   return (
       <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 flex flex-col items-center text-center transform transition duration-500 hover:scale-105">
@@ -27,7 +29,7 @@ function ExamSuccess() {
   
           {/* Action Button */}
           <button
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={()=>navigate("/resultHistory")}
             className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-md transition-colors duration-300"
           >
             Go To Dashboard

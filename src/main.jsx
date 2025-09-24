@@ -26,6 +26,9 @@ import Success from "./component/Success.jsx";
 import ExamSuccess from "./component/examForm/ExamSuccess.jsx";
 import TestForm from "./component/examForm/TestForm.jsx";
 import PreseTestForm from "./component/examForm/PreTestForm.jsx";
+import NetworkErr from "./component/NetworkErr.jsx";
+import Answer from "./component/answer/Answer.jsx";
+import NoDataFound from "./component/NoDataFound.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,6 +48,9 @@ const router = createBrowserRouter(
       <Route path="xmsuccess" element={<ExamSuccess/>}/>
       <Route path="test" element={<TestForm/>}/>
       <Route path="pretest" element={<PreseTestForm/>}/>
+      <Route path="netErr" element={<NetworkErr/>}/>
+      <Route path="answer" element={<Answer/>}/>
+      <Route path="noData" element={<NoDataFound/>}/>
       <Route path="*" element={<Err404/>}/>
     </Route>
   )

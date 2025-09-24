@@ -13,6 +13,7 @@ function SelectPhase() {
       <div className="flex flex-col items-center justify-center space-y-4">
         <button
           className="w-full py-2 md:w-1/3 rounded-md bg-gradient-to-r from-blue-600 to-pink-700"
+          // onClick={() => navigate("/quizDesc")}
           onClick={() => navigate("/quizDesc")}
         >
           Create Manually ✍️
