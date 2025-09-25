@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Navbar from "../navbar/Navbar";
 import authService from "../../authentication/auth";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function Home() {
   useEffect(() => {
@@ -15,8 +16,16 @@ function Home() {
     try {
       const { exp } = jwtDecode(token);
       if (!exp || exp * 1000 < Date.now()) {
-        // Token expired
         authService.logout();
+        return
+      }
+
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if(response.status===200)
+      {
+        localStorage.setItem("image",response.data.picture)
         return
       }
     } catch (e) {

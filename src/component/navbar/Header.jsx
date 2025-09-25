@@ -4,8 +4,6 @@ import { IoCreateOutline } from "react-icons/io5";
 import { MdSunny } from "react-icons/md";
 import { FaMoon } from "react-icons/fa6";
 import { useNavigate } from "react-router";
-import authService from "../../authentication/auth";
-import { jwtDecode } from "jwt-decode";
 
 function Header() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -22,41 +20,40 @@ function Header() {
       document.documentElement.classList.remove("dark");
     }
   }, [theme]);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
 
-    try {
-      const { exp } = jwtDecode(token);
-      if (!exp || exp * 1000 < Date.now()) {
-        authService.logout();
+  useEffect(() => {
+    const handleUserChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const profileImage = params.get("image")
+        ? decodeURIComponent(params.get("image"))
+        : null;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        if (profileImage) {
+          localStorage.setItem("image", profileImage);
+          setImage(profileImage);
+        }
         navigate("/");
-        return;
-      }
-    } catch (e) {
-      // Invalid token
-      localStorage.removeItem("token");
-      localStorage.removeItem("image");
-      console.log("Invalid token", e);
-      navigate("/");
-    }
-  }, [navigate, image]);
+      } else {
+        const storedToken = localStorage.getItem("token");
+        const storedImage = localStorage.getItem("image");
 
-  // Capture token, name, image from URL params once
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const profileImage = decodeURIComponent(params.get("image"));
-
-    if (token) {
-      localStorage.setItem("token", token);
-      if (profileImage) {
-        localStorage.setItem("image", profileImage);
-        setImage(profileImage);
-        window.dispatchEvent(new Event("userChanged"));
+        if (!storedToken || !storedImage) {
+          setImage(null);
+        } else {
+          setImage(storedImage);
+        }
       }
-      navigate("/");
-    }
+    };
+
+    window.addEventListener("userChanged", handleUserChange);
+    handleUserChange();
+
+    return () => {
+      window.removeEventListener("userChanged", handleUserChange);
+    };
   }, [navigate]);
 
   // Reusable Icon Button

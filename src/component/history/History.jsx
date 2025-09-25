@@ -55,7 +55,6 @@ function History() {
   }, []);
   useEffect(() => {
     setIsLoading(resultSet.length === 0);
-    console.log(resultSet);
   }, [resultSet]);
 
   return (
