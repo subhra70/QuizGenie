@@ -85,11 +85,8 @@ function Answer() {
                 {ans.options.map((option, index) => (
                   <div
                     key={index}
-                    className={`p-2 rounded-lg border ${
-                      ans.answer === option
-                        ? "border-green-600 bg-green-50 dark:bg-green-900/30"
-                        : "border-gray-300 dark:border-gray-700"
-                    }`}
+                    className={`p-2 rounded-lg border border-gray-300 dark:border-gray-700
+                    `}
                   >
                     <span className="font-medium">
                       ({String.fromCharCode(97 + index)}) {option}
