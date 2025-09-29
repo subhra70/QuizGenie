@@ -1,41 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Navbar from "../navbar/Navbar";
-import authService from "../../authentication/auth";
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 
 function Home() {
-  useEffect(() => {
-  const init = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      return;
-    }
-
-    try {
-      const { exp } = jwtDecode(token);
-      if (!exp || exp * 1000 < Date.now()) {
-        authService.logout();
-        return
-      }
-
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if(response.status===200)
-      {
-        localStorage.setItem("image",response.data.picture)
-        return
-      }
-    } catch (e) {
-      console.log(e);
-      authService.logout();
-    }
-  };
-
-  init();
-}, []);
   return (
     <div className="w-full relative md:mt-12 md:pt-16 md:grid md:grid-cols-12 md:gap-6">
       

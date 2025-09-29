@@ -4,6 +4,8 @@ import { IoCreateOutline } from "react-icons/io5";
 import { MdSunny } from "react-icons/md";
 import { FaMoon } from "react-icons/fa6";
 import { useNavigate } from "react-router";
+import { jwtDecode } from "jwt-decode";
+import authService from "../../authentication/auth";
 
 function Header() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -30,21 +32,25 @@ function Header() {
         : null;
 
       if (token) {
+        try {
+          const { exp } = jwtDecode(token);
+          if (!exp || exp * 1000 < Date.now()) {
+            authService.logout();
+            setImage(null);
+            return;
+          }
+        } catch {
+          authService.logout();
+          setImage(null);
+          return;
+        }
+
         localStorage.setItem("token", token);
         if (profileImage) {
           localStorage.setItem("image", profileImage);
           setImage(profileImage);
         }
         navigate("/");
-      } else {
-        const storedToken = localStorage.getItem("token");
-        const storedImage = localStorage.getItem("image");
-
-        if (!storedToken || !storedImage) {
-          setImage(null);
-        } else {
-          setImage(storedImage);
-        }
       }
     };
 
