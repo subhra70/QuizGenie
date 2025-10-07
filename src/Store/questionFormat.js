@@ -11,7 +11,6 @@ const questionSlice = createSlice({
       const questions=obj.quizQuestion
       return questions.map((item) => {
         const marks=item.marks||{}
-        console.log(marks);
         
         return {
           qid: item.id,

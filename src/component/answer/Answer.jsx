@@ -62,14 +62,14 @@ function Answer() {
   }, [quizId, dispatch, navigate, answers.questions]);
 
   return (
-    <div className="w-full min-h-screen p-4 bg-gray-100 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+    <div className="w-full min-h-screen p-4 mt-12 bg-gray-100 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
       <Navbar />
       {isLoading ? (
         <div className="flex items-center justify-center h-screen">
           <p className="text-lg font-semibold animate-pulse">Loading...</p>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6 mb-14">
           {answers.questions.map((ans, idx) => (
             <div
               key={idx}

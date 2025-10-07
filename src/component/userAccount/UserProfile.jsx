@@ -69,7 +69,7 @@ function UserProfile() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="flex mt-10 flex-col min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
       <Navbar />
 
       <div className="flex flex-col items-center mt-8 px-4">

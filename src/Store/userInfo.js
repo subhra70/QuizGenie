@@ -4,14 +4,23 @@ const initialState={
     id:-1,
     createTrial:-1,
     autoGenTrial:-1,
-    date:"",
-    duration:0
+    pdate:"",
+    duration:0,
+    isPremimum:false
 }
 
 const userSlice=createSlice({
     name:"user",
     initialState,
     reducers:{
+        loadUserData:(state,action)=>{
+            state.id=action.payload.user.id;
+            state.createTrial=action.payload.createTrial;
+            state.autoGenTrial=action.payload.freeTrialAutogen,
+            state.pdate=action.payload.purchasedDate,
+            state.duration=action.payload.monthDuration,
+            state.isPremimum=action.payload.isPremium
+        },
         setPayment:(state,action)=>{
             state.createTrial=action.payload.createTrial
             state.autoGenTrial=action.payload.autoGenTrial,
@@ -21,5 +30,5 @@ const userSlice=createSlice({
     }
 })
 
-export const {setPayment}=userSlice.actions
+export const {loadUserData,setPayment}=userSlice.actions
 export default userSlice.reducer

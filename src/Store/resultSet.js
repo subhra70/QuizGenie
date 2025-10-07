@@ -10,20 +10,19 @@ const resultSlice = createSlice({
       return action.payload.map((item) => ({
         resId: item.id,
         quizId: item.quizClass.id,
-        role:item.role,
+        role: item.role,
         obtainedMarks: item.obtainedMark,
         fullMarks: item.quizClass.fullMarks,
         date: item.date,
-        locked: item.quizClass.isLocked,
+        locked: item.quizClass.locked,
         isPerformed: item.performed,
       }));
     },
     handleLock: (state, action) => {
-      state.forEach((item) => {
-        if (item.resId === action.payload) {
-          item.locked = !item.locked;
-        }
-      });
+      const item = state.find((item) => item.quizId === action.payload);
+      if (item) {
+        item.locked = !item.locked;
+      }
     },
     handlePerformed: (state, action) => {
       state.forEach((item) => {
@@ -35,9 +34,31 @@ const resultSlice = createSlice({
     handleDelete: (state, action) => {
       return state.filter((item) => item.resId !== action.payload);
     },
+    addQuiz: (state, action) => {
+      let flag = 0;
+      state.forEach((item) => {
+        if (item.quizId === action.payload.quizClass.id) {
+          flag = 1;
+          return
+        }
+      });
+      if (flag === 0) {
+        const item = action.payload;
+        state.unshift({
+          resId: item.id,
+          quizId: item.quizClass.id,
+          role: item.role,
+          obtainedMarks: item.obtainedMark,
+          fullMarks: item.quizClass.fullMarks,
+          date: item.date,
+          locked: item.quizClass.locked,
+          isPerformed: item.performed,
+        });
+      }
+    },
   },
 });
 
-export const { loadData, handleLock, handlePerformed, handleDelete } =
+export const { loadData, handleLock, handlePerformed, handleDelete, addQuiz } =
   resultSlice.actions;
 export default resultSlice.reducer;

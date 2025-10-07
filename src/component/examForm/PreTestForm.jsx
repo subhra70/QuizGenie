@@ -97,7 +97,7 @@ function PreseTestForm() {
   }
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300 space-y-6">
+    <div className="max-w-lg mx-auto mt-16 p-4 mb-14 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300 space-y-6">
       <Navbar />
       {/* Exam Details */}
       <div className="flex flex-col space-y-2">

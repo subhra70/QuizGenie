@@ -5,12 +5,17 @@ import { loadData, setTotalQuestions } from "../../Store/examInfo1";
 import Navbar from "../navbar/Navbar";
 import authService from "../../authentication/auth";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { loadUserData } from "../../Store/userInfo";
 
 function AutoGenCard() {
   const [showDetail, setShowDetail] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
-  const [negAllow, setNegAllow] = useState("yes");
+  const [negAllow, setNegAllow] = useState(true);
   const questionData = useSelector((state) => state.examinationInfo.xminfo);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState({
     format: questionData.format || "",
@@ -27,31 +32,52 @@ function AutoGenCard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    try {
-      const { exp } = jwtDecode(token);
-      if (!exp || exp * 1000 < Date.now()) {
-        authService.logout();
+    const fetchDetails = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
         navigate("/");
         return;
       }
-    } catch (error) {
-      console.log(error);
-      authService.logout();
-      navigate("/");
-    }
-  }, [navigate]);
+      try {
+        const { exp } = jwtDecode(token);
+        if (!exp || exp * 1000 < Date.now()) {
+          authService.logout();
+          navigate("/");
+          return;
+        }
+
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/userDetails`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          dispatch(loadUserData(response.data));
+          setUserInfo(response.data);
+        } else if (response.status === 404) {
+          navigate("/noData");
+        }
+      } catch (error) {
+        console.log(error);
+        authService.logout();
+        navigate("/");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDetails();
+  }, [navigate, dispatch]);
   const handleSelection = (e) => {
-    const data = e.target.value;
-    if (data === "Other") {
+    const value = e.target.value;
+    if (value === "Other") {
       setShowDetail(true);
-      setData({ ...data, format: data });
+      setData((prev) => ({ ...prev, format: value }));
     } else {
       setShowDetail(false);
+      setData((prev) => ({ ...prev, format: value }));
     }
   };
 
@@ -78,13 +104,37 @@ function AutoGenCard() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (userInfo.freeTrialAutogen <= 0) {
+      alert("Purchase a package to continue");
+      navigate("/payment");
+      return;
+    }
     setIsSubmit(true);
     dispatch(loadData(data));
     if (data.format === "Other") {
-      dispatch(setTotalQuestions(total));
+      if (
+        total !=
+        data.mcq1 + data.msq2 + data.msq1 + data.msq2 + data.nat1 + data.nat2
+      ) {
+        setError(true);
+        setIsSubmit(false);
+        return;
+      } else {
+        setIsSubmit(false);
+        dispatch(setTotalQuestions(total));
+      }
     }
     navigate("/confirmPost");
   };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-semibold animate-pulse text-blue-500">
+          Loading...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center px-4 py-12 mt-6 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -93,6 +143,25 @@ function AutoGenCard() {
       <h1 className="text-3xl md:text-4xl text-blue-600 font-extrabold mb-6 tracking-wide">
         Generation Description
       </h1>
+      {/* Free Trial Info */}
+      {userInfo?.freeTrialAutogen >= 0 && !userInfo?.premium && (
+        <div className="mb-4 px-4 py-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold rounded-lg shadow-md">
+          Free Trial Remaining:{" "}
+          <span className="text-blue-700 dark:text-blue-300 font-bold">
+            {userInfo?.freeTrialAutogen}
+          </span>
+        </div>
+      )}
+      {userInfo?.freeTrialAutogen >= 0 &&
+        userInfo?.premium &&
+        userInfo?.monthDuration < 12 && (
+          <div className="mb-4 px-4 py-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold rounded-lg shadow-md">
+            Trial Remaining:{" "}
+            <span className="text-blue-700 dark:text-blue-300 font-bold">
+              {userInfo.freeTrialAutogen}
+            </span>
+          </div>
+        )}
 
       {/* Form Container */}
       <form
@@ -154,7 +223,7 @@ function AutoGenCard() {
         {/* Number of Questions & Negative Marking */}
         {showDetail && (
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 relative">
               <label
                 htmlFor="qno"
                 className="font-semibold bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
@@ -165,11 +234,23 @@ function AutoGenCard() {
                 type="number"
                 name="qno"
                 placeholder="Enter number"
-                value={total}
-                onChange={(e) => setTotal(e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
+                value={total == 0 ? "" : total}
+                onChange={(e) => {
+                  setTotal(parseInt(e.target.value) || 0);
+                  setError(false); // clear error when user changes input
+                }}
+                className={`border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${
+                  error
+                    ? "border-red-500 focus:ring-red-500"
+                    : "focus:ring-blue-500"
+                } bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300`}
                 required
               />
+              {error && (
+                <span className="text-sm text-red-500 absolute -bottom-5">
+                  Total questions must match the sum of all types below
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col space-y-2 items-center">
@@ -181,7 +262,7 @@ function AutoGenCard() {
                   <input
                     type="radio"
                     name="negAllow"
-                    checked={negAllow === "yes"}
+                    checked={negAllow === true}
                     onChange={handleChange}
                     className="accent-blue-600 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
                     value="yes"
@@ -192,7 +273,7 @@ function AutoGenCard() {
                   <input
                     type="radio"
                     name="negAllow"
-                    checked={negAllow === "no"}
+                    checked={negAllow === false}
                     onChange={handleChange}
                     className="accent-blue-600 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
                     value="no"
@@ -323,6 +404,7 @@ function AutoGenCard() {
             name="duration"
             value={data.duration !== 0 ? data.duration : ""}
             onChange={handleInputChange}
+            required
             className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
           />
         </div>
@@ -342,6 +424,7 @@ function AutoGenCard() {
               value={data.desc}
               onChange={handleInputChange}
               rows="4"
+              required
               placeholder="Mention the examination name, syllabus, language, question format, marks per question etc information so that genertion can be accurate.."
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
             ></textarea>

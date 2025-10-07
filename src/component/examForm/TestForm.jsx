@@ -133,6 +133,7 @@ function TestForm() {
         if (response.status === 200) {
           setSubmitting(false);
           setSubmit(false);
+          alert("Press Esc to exit full screen")
           navigate("/xmsuccess");
         }
       } catch (error) {
@@ -163,7 +164,7 @@ function TestForm() {
     );
 
   return (
-    <div className="flex flex-col min-h-screen p-4 md:p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="flex flex-col min-h-screen mt-10 p-4 md:p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <Navbar />
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center text-lg font-semibold border-b pb-3 gap-2">

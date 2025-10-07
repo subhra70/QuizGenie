@@ -29,6 +29,13 @@ import PreseTestForm from "./component/examForm/PreTestForm.jsx";
 import NetworkErr from "./component/NetworkErr.jsx";
 import Answer from "./component/answer/Answer.jsx";
 import NoDataFound from "./component/NoDataFound.jsx";
+import PaymentCard from "./component/payment/PaymentCard.jsx";
+import ChangePassword from "./component/history/ChangePassword.jsx";
+import PasswordAuth from "./component/examForm/PasswordAuth.jsx";
+import EditQuiz from "./component/createQuiz/EditQuiz.jsx";
+import Result from "./component/result/Result.jsx";
+import HelpForm from "./component/helpDesk/HelpForm.jsx";
+import AdminDashboard from "./component/dashboard/AdminDashboard.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -40,18 +47,25 @@ const router = createBrowserRouter(
       <Route path="autoGen" element={<AutoGenCard />} />
       <Route path="confirmPost" element={<PostSelectionCard />} />
       <Route path="createQuiz" element={<ManualCreateQuiz />} />
-      <Route path="resultHistory" element={<History/>}/>
-      <Route path="userProfile" element={<UserProfile/>}/>
-      <Route path="remaining" element={<Remaining/>}/>
-      <Route path="unauthorized" element={<Unauthorized401/>}/>
-      <Route path="success" element={<Success/>}/>
-      <Route path="xmsuccess" element={<ExamSuccess/>}/>
-      <Route path="test" element={<TestForm/>}/>
-      <Route path="pretest" element={<PreseTestForm/>}/>
-      <Route path="netErr" element={<NetworkErr/>}/>
-      <Route path="answer" element={<Answer/>}/>
-      <Route path="noData" element={<NoDataFound/>}/>
-      <Route path="*" element={<Err404/>}/>
+      <Route path="resultHistory" element={<History />} />
+      <Route path="userProfile" element={<UserProfile />} />
+      <Route path="remaining" element={<Remaining />} />
+      <Route path="unauthorized" element={<Unauthorized401 />} />
+      <Route path="success" element={<Success />} />
+      <Route path="xmsuccess" element={<ExamSuccess />} />
+      <Route path="test" element={<TestForm />} />
+      <Route path="pretest" element={<PreseTestForm />} />
+      <Route path="netErr" element={<NetworkErr />} />
+      <Route path="answer" element={<Answer />} />
+      <Route path="noData" element={<NoDataFound />} />
+      <Route path="*" element={<Err404 />} />
+      <Route path="payment" element={<PaymentCard />} />
+      <Route path="changePass" element={<ChangePassword />} />
+      <Route path="passAuth" element={<PasswordAuth/>}/>
+      <Route path="editQuiz" element={<EditQuiz/>}/>
+      <Route path="result" element={<Result/>}/>
+      <Route path="helpDesk" element={<HelpForm/>}/>
+      <Route path="adminDashboard704" element={<AdminDashboard/>}/>
     </Route>
   )
 );

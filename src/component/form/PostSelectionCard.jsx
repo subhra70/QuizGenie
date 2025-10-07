@@ -168,7 +168,7 @@ function PostSelectionCard() {
 
         <div className="w-full bg-red-300 p-2 rounded-md">
           <b>Note:</b> In case of auto generation, AI may not generate exact
-          number of questions that you have specified. Sorry for this.
+          number of questions that you have specified. We will fix it soon.
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

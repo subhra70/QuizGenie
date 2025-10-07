@@ -3,13 +3,13 @@ import Navbar from "../navbar/Navbar";
 
 function Home() {
   return (
-    <div className="w-full relative md:mt-12 md:pt-16 md:grid md:grid-cols-12 md:gap-6">
+    <div className="w-full relative md:grid md:grid-cols-12 md:gap-6">
       
       {/* Sidebar / Bottom Navbar */}
       
     <Navbar/>
       {/* Main Content */}
-      <div className="w-full md:col-span-11 flex flex-col items-center justify-center text-center space-y-5 md:space-y-10 mt-5 md:mt-0">
+      <div className="w-full min-h-screen md:col-span-11 flex flex-col items-center justify-center text-center space-y-5 md:space-y-10">
         <h1 className="text-3xl lg:text-5xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
           Crafted by Teachers, Powered by AI, Perfected by Students.
         </h1>

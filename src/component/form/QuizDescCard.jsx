@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadData, setTotalQuestions} from "../../Store/examInfo1";
+import { loadData, setTotalQuestions } from "../../Store/examInfo1";
 import { useNavigate } from "react-router";
 import Navbar from "../navbar/Navbar";
 import authService from "../../authentication/auth";
 import { jwtDecode } from "jwt-decode";
+import { loadUserData } from "../../Store/userInfo";
+import axios from "axios";
 
 function QuizDescCard() {
   const [negvalue, setNegvalue] = useState("yes");
   const [isSubmit, setIsSubmit] = useState(false);
-   const [totalQuestion,setTotalQuestion]=useState(0)
+  const [isLoading, setIsLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState();
+  const [totalQuestion, setTotalQuestion] = useState(0);
   const xmInfo = useSelector((state) => state.examinationInfo.xminfo);
 
   const [data, setData] = useState({
     format: "Manual",
-    mcq1:0,
-    mcq2:0,
-    msq1:0,
-    msq2:0,
-    nat1:0,
-    nat2:0,
+    mcq1: 0,
+    mcq2: 0,
+    msq1: 0,
+    msq2: 0,
+    nat1: 0,
+    nat2: 0,
     negativeMark: xmInfo.negativeMark || true,
     duration: xmInfo.totalQuestion !== 0 ? xmInfo.duration : 0,
     desc: "",
@@ -28,31 +32,48 @@ function QuizDescCard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    try {
-      const { exp } = jwtDecode(token);
-      if (!exp || exp * 1000 < Date.now()) {
-        authService.logout();
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
         navigate("/");
         return;
       }
-    } catch (error) {
-      console.log(error);
-      authService.logout();
-      navigate("/");
-    }
-  }, [navigate]);
+      try {
+        const { exp } = jwtDecode(token);
+        if (!exp || exp * 1000 < Date.now()) {
+          authService.logout();
+          navigate("/");
+          return;
+        }
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/userDetails`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          dispatch(loadUserData(response.data));
+          setUserInfo(response.data);
+        } else if (response.status === 404) {
+          navigate("/noData");
+        }
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        authService.logout();
+        navigate("/");
+      }
+    };
+    fetchData();
+  }, [navigate, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const intVal = [
-      "duration",
-    ];
+    const intVal = ["duration"];
     setData({
       ...data,
       [name]: intVal.includes(name)
@@ -75,20 +96,51 @@ function QuizDescCard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      setIsSubmit(true);
-      dispatch(loadData(data));
-      dispatch(setTotalQuestions(totalQuestion))
-      navigate("/createQuiz");
+    if (userInfo.createTrial === 0) {
+      navigate("/payment");
+    }
+    setIsSubmit(true);
+    dispatch(loadData(data));
+    dispatch(setTotalQuestions(totalQuestion));
+    navigate("/createQuiz");
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-semibold animate-pulse text-blue-500">
+          Loading...
+        </p>
+      </div>
+    );
+  }
   return (
-    <div className="flex flex-col items-center px-4 py-8">
-      <Navbar/>
+    <div className="flex flex-col min-h-screen items-center mt-8 px-4 py-8">
+      <Navbar />
       {/* Heading */}
       <h1 className="text-3xl md:text-4xl text-blue-600 font-extrabold mb-6 tracking-wide">
         Quiz Description
       </h1>
 
+      {/* Free Trial Info */}
+      {userInfo?.createTrial >= 0 && !userInfo?.premium && (
+        <div className="mb-4 px-4 py-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold rounded-lg shadow-md">
+          Free Trial Remaining:{" "}
+          <span className="text-blue-700 dark:text-blue-300 font-bold">
+            {userInfo?.createTrial}
+          </span>
+        </div>
+      )}
+      {userInfo?.createTrial >= 0 &&
+        userInfo?.premium &&
+        userInfo?.monthDuration < 12 && (
+          <div className="mb-4 px-4 py-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold rounded-lg shadow-md">
+            Trial Remaining:{" "}
+            <span className="text-blue-700 dark:text-blue-300 font-bold">
+              {userInfo?.createTrial}
+            </span>
+          </div>
+        )}
       {/* Form Container */}
       <form
         className="w-full max-w-2xl rounded-2xl shadow-xl dark:shadow-[0_4px_12px_rgba(255,255,255,0.15)]  p-6 md:p-8 space-y-6
@@ -107,7 +159,7 @@ function QuizDescCard() {
               required
               value={data.totalQuestion !== 0 ? data.totalQuestion : ""}
               placeholder="Enter number"
-              onChange={(e)=>setTotalQuestion(Number(e.target.value))}
+              onChange={(e) => setTotalQuestion(Number(e.target.value))}
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500
                          bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
             />
