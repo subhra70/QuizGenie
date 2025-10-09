@@ -96,6 +96,10 @@ function UserProfile() {
               <p className="text-gray-600 dark:text-gray-400">
                 {profile.gmail}
               </p>
+              {
+              profile.gmail==="shawsubhra68@gmail.com" &&
+              <button className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow transition duration-300" onClick={()=>navigate("/adminDashboard704")}>Admin Page</button>
+            }
             </div>
 
             {/* Sign Out */}
@@ -107,6 +111,7 @@ function UserProfile() {
               <span>Sign Out</span>
               <GiExitDoor size={20} />
             </button>
+            
           </div>
         </div>
       </div>

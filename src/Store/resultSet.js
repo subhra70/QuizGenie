@@ -27,7 +27,7 @@ const resultSlice = createSlice({
     handlePerformed: (state, action) => {
       state.forEach((item) => {
         if (item.resId === action.payload) {
-          item.performed = true;
+          item.isPerformed = true;
         }
       });
     },
@@ -35,14 +35,8 @@ const resultSlice = createSlice({
       return state.filter((item) => item.resId !== action.payload);
     },
     addQuiz: (state, action) => {
-      let flag = 0;
-      state.forEach((item) => {
-        if (item.quizId === action.payload.quizClass.id) {
-          flag = 1;
-          return
-        }
-      });
-      if (flag === 0) {
+      const exists = state.some(item => item.quizId === action.payload.quizClass.id);
+      if (!exists) {
         const item = action.payload;
         state.unshift({
           resId: item.id,

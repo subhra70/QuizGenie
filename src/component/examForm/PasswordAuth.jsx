@@ -8,17 +8,20 @@ import Navbar from "../navbar/Navbar";
 function PasswordAuth() {
   const [quizId, setQuizId] = useState();
   const [password, setPassword] = useState("");
+  const [isLoading,setIsLoading]=useState(true)
   const navigate = useNavigate();
   const location = useLocation();
   const qid = location.state?.qid;
 
   useEffect(() => {
     if (qid) {
+      setIsLoading(false)
       setQuizId(qid);
     }
   }, [qid]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/");
@@ -41,18 +44,29 @@ function PasswordAuth() {
         }
       );
       if (response.status === 200) {
+        setIsLoading(false)
         navigate("/pretest", {
           state: { qid: quizId },
         });
       }
       else if(response.status===404)
       {
+        setIsLoading(false)
         navigate("/noData")
       }
     } catch (error) {
+      setIsLoading(false)
       console.log(error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen justify-center items-center bg-gray-100 dark:bg-gray-900 transition-colors duration-500">

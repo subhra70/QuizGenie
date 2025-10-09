@@ -19,7 +19,7 @@ function History() {
   const [searchId, setSearchId] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const resultSet = useSelector((state) => state.resultInfo) || null;
+  const resultSet = useSelector((state) => state.resultInfo) || [];
 
   useEffect(() => {
     const fetchResultHistory = async () => {
@@ -86,8 +86,8 @@ function History() {
         }
       );
       if (response.status === 200) {
-        setIsLoading(false);
         dispatch(handleDelete(id));
+        setIsLoading(false);
       } else if (response.status === 404) {
         navigate("/noData");
       }
@@ -169,11 +169,11 @@ function History() {
         }
       );
       if (response.status === 200) {
+        dispatch(addQuiz(response.data));
         setIsLoading(false);
         setLoadMsg("");
-        setSearchStatus(true);
+        setSearchStatus(false);
         setSearchedQuiz({});
-        dispatch(addQuiz(response.data));
       }
     } catch (error) {
       setIsLoading(false);

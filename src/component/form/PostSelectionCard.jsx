@@ -97,6 +97,11 @@ function PostSelectionCard() {
   }, [xmInfo.format, questionsSet, xmInfo, dispatch]);
 
   const handleSubmit = async (e) => {
+    if(!xmInfo)
+    {
+      navigate("/")
+      return
+    }
     e.preventDefault();
     setLoading(true);
     const token = localStorage.getItem("token");

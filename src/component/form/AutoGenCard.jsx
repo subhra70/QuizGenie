@@ -12,22 +12,21 @@ function AutoGenCard() {
   const [showDetail, setShowDetail] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [negAllow, setNegAllow] = useState(true);
-  const questionData = useSelector((state) => state.examinationInfo.xminfo);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState({
-    format: questionData.format || "",
-    neg: questionData.negativeMark || true,
-    mcq1: questionData.mcq1 || 0,
-    mcq2: questionData.mcq2 || 0,
-    msq1: questionData.msq1 || 0,
-    msq2: questionData.msq2 || 0,
-    nat1: questionData.nat1 || 0,
-    nat2: questionData.nat2 || 0,
-    duration: questionData.duration || 0,
-    description: questionData.description || "",
+    format:"",
+    neg:true,
+    mcq1:0,
+    mcq2:0,
+    msq1: 0,
+    msq2:0,
+    nat1:0,
+    nat2:0,
+    duration:0,
+    description:"",
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -99,7 +98,7 @@ function AutoGenCard() {
     ];
     setData({
       ...data,
-      [name]: numericFields.includes(name) ? parseInt(value || 0) : value,
+      [name]: numericFields.includes(name) ? Number(value) : value,
     });
   };
   const handleSubmit = async (e) => {
@@ -114,7 +113,7 @@ function AutoGenCard() {
     if (data.format === "Other") {
       if (
         total !=
-        data.mcq1 + data.msq2 + data.msq1 + data.msq2 + data.nat1 + data.nat2
+        data.mcq1 + data.mcq2 + data.msq1 + data.msq2 + data.nat1 + data.nat2
       ) {
         setError(true);
         setIsSubmit(false);
