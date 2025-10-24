@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../navbar/Navbar";
 
 function Home() {
+  console.log(`${import.meta.env.VITE_API_URL}`)
   return (
     <div className="w-full relative md:grid md:grid-cols-12 md:gap-6">
       
