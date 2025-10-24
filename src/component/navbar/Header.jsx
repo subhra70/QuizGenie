@@ -50,6 +50,7 @@ function Header() {
           localStorage.setItem("image", profileImage);
           setImage(profileImage);
         }
+        console.log(token)
         navigate("/");
       }
     };
