@@ -133,20 +133,20 @@ function UserProfile() {
                   </button>
                 )}
 
-                {/* {!profile.isPremium && (
+                {!profile.isPremium && (
                   <button
                     className="px-5 py-2.5 bg-violet-500 hover:bg-violet-600 text-white font-medium rounded-xl shadow-md transition duration-300 hover:shadow-lg"
                     onClick={() => navigate("/payment")}
                   >
                     Upgrade to Premium
                   </button>
-                )} */}
-                <button
+                )}
+                {/* <button
                   className="px-5 py-2.5 bg-violet-500 hover:bg-violet-600 text-white font-medium rounded-xl shadow-md transition duration-300 hover:shadow-lg"
                   onClick={() => navigate("/payment")}
                 >
                   Upgrade to Premium
-                </button>
+                </button> */}
               </div>
             </div>
 
