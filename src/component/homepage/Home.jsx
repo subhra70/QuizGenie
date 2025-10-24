@@ -23,7 +23,7 @@ function Home() {
         </h1>
 
         <button className="text-md px-4 py-3 md:px-8 md:text-lg font-bold rounded-full shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:scale-105 transition duration-300">
-          🚀 Powered By GeminiAI
+          🚀 Powered By AI
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { useNavigate } from "react-router";
 import { loadData, setTotalQuestions } from "../../Store/examInfo1";
 import Navbar from "../navbar/Navbar";
@@ -82,7 +82,7 @@ function AutoGenCard() {
 
   const handleChange = (e) => {
     const value = e.target.value === "yes";
-    setNegAllow(e.target.value);
+    setNegAllow(value);
     setData({ ...data, neg: value });
   };
   const handleInputChange = (e) => {
@@ -213,7 +213,7 @@ function AutoGenCard() {
               value={data.desc}
               onChange={handleInputChange}
               rows="4"
-              placeholder="Specify a concise description about the exam (Language of question,Subject and Syllabus(topics only not details). Don't use not more than 70 words."
+              placeholder="Specify Subject(s), Syllabus and Difficulty(optional) "
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
             ></textarea>
           </div>
@@ -424,7 +424,7 @@ function AutoGenCard() {
               onChange={handleInputChange}
               rows="4"
               required
-              placeholder="Mention the examination name, syllabus, language, question format, marks per question etc information so that genertion can be accurate.."
+              placeholder="Mention the examination name, subject(s) or topic, syllabus, language and difficulty(optional) information so that genertion can be accurate.."
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300"
             ></textarea>
           </div>

@@ -36,6 +36,7 @@ import EditQuiz from "./component/createQuiz/EditQuiz.jsx";
 import Result from "./component/result/Result.jsx";
 import HelpForm from "./component/helpDesk/HelpForm.jsx";
 import AdminDashboard from "./component/dashboard/AdminDashboard.jsx";
+import PostPayment from "./component/payment/PostPayment.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -61,11 +62,12 @@ const router = createBrowserRouter(
       <Route path="*" element={<Err404 />} />
       <Route path="payment" element={<PaymentCard />} />
       <Route path="changePass" element={<ChangePassword />} />
-      <Route path="passAuth" element={<PasswordAuth/>}/>
-      <Route path="editQuiz" element={<EditQuiz/>}/>
-      <Route path="result" element={<Result/>}/>
-      <Route path="helpDesk" element={<HelpForm/>}/>
-      <Route path="adminDashboard704" element={<AdminDashboard/>}/>
+      <Route path="passAuth" element={<PasswordAuth />} />
+      <Route path="editQuiz" element={<EditQuiz />} />
+      <Route path="result" element={<Result />} />
+      <Route path="helpDesk" element={<HelpForm />} />
+      <Route path="adminDashboard704" element={<AdminDashboard />} />
+      <Route path="postPayment" element={<PostPayment />} />
     </Route>
   )
 );

@@ -9,7 +9,7 @@ import { loadUserData } from "../../Store/userInfo";
 import axios from "axios";
 
 function QuizDescCard() {
-  const [negvalue, setNegvalue] = useState("yes");
+  const [negvalue, setNegvalue] = useState(true);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState();
@@ -86,10 +86,10 @@ function QuizDescCard() {
 
   const handleNegative = (e) => {
     if (e.target.value === "yes") {
-      setNegvalue("yes");
+      setNegvalue(true);
       setData({ ...data, neg: true });
     } else {
-      setNegvalue("no");
+      setNegvalue(false);
       setData({ ...data, neg: false });
     }
   };
@@ -173,7 +173,7 @@ function QuizDescCard() {
                   type="radio"
                   name="negAllow"
                   className="accent-blue-600"
-                  checked={negvalue === "yes"}
+                  checked={negvalue === true}
                   value="yes"
                   onChange={handleNegative}
                 />
@@ -184,7 +184,7 @@ function QuizDescCard() {
                   type="radio"
                   name="negAllow"
                   className="accent-blue-600"
-                  checked={negvalue === "no"}
+                  checked={negvalue === false}
                   value="no"
                   onChange={handleNegative}
                 />

@@ -115,6 +115,7 @@ function PostSelectionCard() {
     try {
       exp = jwtDecode(token).exp;
     } catch (err) {
+      console.log(err)
       authService.logout();
       navigate("/");
       return;

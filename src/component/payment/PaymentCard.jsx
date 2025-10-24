@@ -1,12 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Navbar from "../navbar/Navbar";
 import { useNavigate } from "react-router";
-import authService from "../../authentication/auth";
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 
 function PaymentCard() {
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const plans = [
     {
@@ -43,47 +39,7 @@ function PaymentCard() {
       color: "from-purple-500 to-pink-500",
     },
   ];
-  const handlePurchase = async (id) => {
-    setIsLoading(true);
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    try {
-      const { exp } = jwtDecode(token);
-      if (exp * 1000 < Date.now()) {
-        authService.logout();
-        navigate("/");
-      }
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/purchase/${id}`,
-        null,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.status === 200) {
-        setIsLoading(false);
-        alert("Purchase successfull");
-        navigate("/");
-      } else if (response.status === 401) {
-        setIsLoading(false);
-        authService.logout();
-        navigate("/unauthorized");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      alert("Purchase unsuccessfull");
-      console.log(error);
-    }
-  };
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
   return (
     <div className="flex min-h-screen flex-col justify-center">
       <Navbar />
@@ -109,7 +65,9 @@ function PaymentCard() {
             </div>
             <button
               className={`w-full py-2 font-semibold text-white rounded-b-xl bg-gradient-to-r ${plan.color} hover:opacity-90 transition-opacity duration-200`}
-              onClick={() => handlePurchase(plan.id)}
+              onClick={() =>
+                navigate("/postPayment", { state: { pid: plan.id } })
+              }
             >
               Purchase
             </button>
