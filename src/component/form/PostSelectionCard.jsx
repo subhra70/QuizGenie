@@ -140,6 +140,7 @@ function PostSelectionCard() {
         console.log("Manual quiz created successfully");
         navigate("/success");
       } else {
+        console.log(`${import.meta.env.VITE_API_URL}`)
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/generateWithFormat`,
           xmInfo,
